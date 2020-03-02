@@ -4,7 +4,7 @@ cabal-version: 1.24
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 21e13808ecfa5b11306e2068f6e1d54f463aa1a865710d15c74eaa6bf451097d
+-- hash: d6caca972fe517e9e66b9d3a518a74c1d409654b657c89f47c7a5db68aef8857
 
 name:           herraria
 version:        0.0.1
@@ -33,8 +33,8 @@ custom-setup
 library
   exposed-modules:
       Config
+      Herraria
       Level
-      MyProject
       Player
       Render
       World

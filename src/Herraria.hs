@@ -1,4 +1,4 @@
-module MyProject where
+module Herraria where
 
 import           Graphics.Gloss
 import           Graphics.Gloss.Interface.IO.Game

@@ -1,6 +1,6 @@
 module Main where
 
-import           MyProject
+import           Herraria (run)
 
 main :: IO ()
 main = run
