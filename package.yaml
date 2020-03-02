@@ -1,10 +1,10 @@
-name:                my-project
-version:             0.1.0.0
-github:              "iu-haskell-spring-2020/my-project"
+name:                herraria
+version:             0.0.1
+github:              ""
 license:             BSD3
-author:              "Nickolay Kudasov"
-maintainer:          "n.kudasov@innopolis.ru"
-copyright:           "2020 Innopolis University"
+author:              ""
+maintainer:          ""
+copyright:           ""
 
 extra-source-files:
 - README.md
@@ -17,11 +17,13 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/iu-haskell-spring-2020/my-project#readme>
+description:         Please see the README on GitHub
 
 custom-setup:
   dependencies:
   - base
+  - gloss
+  - vector
   - Cabal
   - cabal-doctest >=1.0.2 && <1.1
 
@@ -43,7 +45,7 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - my-project
+    - herraria
 
 tests:
   spec:
@@ -54,7 +56,7 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - my-project
+    - herraria
     - hspec
     - HUnit
     - QuickCheck
