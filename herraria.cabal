@@ -4,7 +4,7 @@ cabal-version: 1.24
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9a030b6e23e8d622a4a06d4d36565fb9f1e0564466e2e251d6c3a485ce0fcb95
+-- hash: 1ecfc42fee7d416da1d7b8eaaa7602a2e64065ae1913e130b5c51c7d0e5574a6
 
 name:           herraria
 version:        0.0.1
@@ -36,6 +36,7 @@ library
       Draft
       MyProject
       Player
+      Render
       World
   other-modules:
       Paths_herraria

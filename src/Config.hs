@@ -6,15 +6,17 @@ data Coords =
     , y :: Float
     }
 
-data GameCoords =
-  GameCoords
-    { x_game :: Int
-    , y_game :: Int
-    }
+(+++) :: Coords -> Coords -> Coords
+(+++) (Coords x' y') (Coords x'' y'') = Coords {x = x' + x'', y = y' + y''}
 
-scale :: Float
-scale = 30.0
+data Direction
+  = UP
+  | DOWN
+  | LEFT
+  | RIGHT
 
-viewScale :: GameCoords -> Coords
-viewScale (GameCoords x' y') =
-  Coords {x = scale * fromIntegral x', y = scale * fromIntegral y'}
+baseMovement :: Float
+baseMovement = 20
+
+unit :: Float
+unit = 30.0

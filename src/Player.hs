@@ -5,18 +5,31 @@ import           Graphics.Gloss
 
 data PlayerData =
   PlayerData
-    { coordinates :: Coords
-    , picture     :: Picture
+    { playerCoords :: Coords
+    , playerPic    :: Picture
+    , playerSpeed  :: Float
     }
 
 playerPicture :: Picture
-playerPicture = color rose (rectangleSolid 30 30)
+playerPicture = color rose (rectangleSolid unit unit)
 
 initPlayer :: PlayerData
-initPlayer = PlayerData {coordinates = Coords 0 0, picture = playerPicture}
+initPlayer =
+  PlayerData
+    {playerCoords = Coords 0 0, playerPic = playerPicture, playerSpeed = 1}
 
 drawPlayer :: PlayerData -> Picture
-drawPlayer (PlayerData coordinates' picture') = translate x' y' picture'
+drawPlayer (PlayerData coordinates' picture' _) = translate x' y' picture'
   where
     x' = x coordinates'
     y' = y coordinates'
+
+movePlayer :: PlayerData -> Direction -> PlayerData
+movePlayer player@(PlayerData coords _ sp) UP =
+  player {playerCoords = coords +++ Coords 0 (unit * sp)}
+movePlayer player@(PlayerData coords _ sp) DOWN =
+  player {playerCoords = coords +++ Coords 0 (-unit * sp)}
+movePlayer player@(PlayerData coords _ sp) RIGHT =
+  player {playerCoords = coords +++ Coords (unit * sp) 0}
+movePlayer player@(PlayerData coords _ sp) LEFT =
+  player {playerCoords = coords +++ Coords (-unit * sp) 0}

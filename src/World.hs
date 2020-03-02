@@ -1,7 +1,8 @@
 module World where
 
+import           Config
 import           Graphics.Gloss
-import           Graphics.Gloss.Interface.IO.Game
+import           Graphics.Gloss.Interface.IO.Interact
 import           Player
 
 data WorldData =
@@ -9,14 +10,19 @@ data WorldData =
     { player :: PlayerData
     }
 
-drawWorld :: WorldData -> IO Picture
-drawWorld (WorldData player') = return (drawPlayer player')
+handleWorld :: Event -> WorldData -> WorldData
+handleWorld (EventKey (SpecialKey KeyUp) Down _ _) world@(WorldData player') =
+  world {player = movePlayer player' UP}
+handleWorld (EventKey (SpecialKey KeyDown) Down _ _) world@(WorldData player') =
+  world {player = movePlayer player' DOWN}
+handleWorld (EventKey (SpecialKey KeyLeft) Down _ _) world@(WorldData player') =
+  world {player = movePlayer player' LEFT}
+handleWorld (EventKey (SpecialKey KeyRight) Down _ _) world@(WorldData player') =
+  world {player = movePlayer player' RIGHT}
+handleWorld _ world = world
 
-handleWorld :: Event -> WorldData -> IO WorldData
-handleWorld _ = return
-
-animateWorld :: Float -> WorldData -> IO WorldData
-animateWorld _ = return
+animateWorld :: Float -> WorldData -> WorldData
+animateWorld _ = id
 
 initWorld :: WorldData
 initWorld = WorldData {player = initPlayer}
