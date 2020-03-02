@@ -4,7 +4,7 @@ cabal-version: 1.24
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 959cc59de88a0c5e4bb4e7b889f587148b8433b065199223677d7acb30b74b1c
+-- hash: 9a030b6e23e8d622a4a06d4d36565fb9f1e0564466e2e251d6c3a485ce0fcb95
 
 name:           herraria
 version:        0.0.1
@@ -32,7 +32,11 @@ custom-setup
 
 library
   exposed-modules:
+      Config
+      Draft
       MyProject
+      Player
+      World
   other-modules:
       Paths_herraria
   hs-source-dirs:
@@ -40,6 +44,8 @@ library
   ghc-options: -Wall -fno-warn-type-defaults
   build-depends:
       base >=4.7 && <5
+    , gloss
+    , vector
   default-language: Haskell2010
 
 executable my-project-exe
@@ -51,7 +57,9 @@ executable my-project-exe
   ghc-options: -Wall -fno-warn-type-defaults -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , gloss
     , herraria
+    , vector
   default-language: Haskell2010
 
 test-suite doctests
@@ -65,7 +73,9 @@ test-suite doctests
     , QuickCheck
     , base
     , doctest
+    , gloss
     , template-haskell
+    , vector
   default-language: Haskell2010
 
 test-suite spec
@@ -81,6 +91,8 @@ test-suite spec
       HUnit
     , QuickCheck
     , base >=4.7 && <5
+    , gloss
     , herraria
     , hspec
+    , vector
   default-language: Haskell2010
