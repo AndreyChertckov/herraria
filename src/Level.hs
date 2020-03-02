@@ -2,12 +2,16 @@ module Level where
 
 import qualified Data.Vector as V
 
-data Block = Air | Ground | Bedrock
+data Block
+  = Air
+  | Ground
+  | Bedrock
   deriving (Show, Eq)
 
 -- | Chunck of Blocks
 -- Dimensions: chunckHeight by chunckWidth
-newtype Chunck a = Chunck (V.Vector (V.Vector a))
+newtype Chunck a =
+  Chunck (V.Vector (V.Vector a))
   deriving (Show)
 
 -- | Level is an infinite list of chuncks
@@ -15,7 +19,7 @@ newtype Chunck a = Chunck (V.Vector (V.Vector a))
 data Level =
   Level
     { leftChuncks  :: [Chunck Block]
-    , curChunck :: Chunck Block
+    , curChunck    :: Chunck Block
     , rightChuncks :: [Chunck Block]
     }
 
@@ -44,20 +48,22 @@ chunckFromList :: [[a]] -> Chunck a
 chunckFromList lst = Chunck (V.fromList (map V.fromList lst))
 
 moveToLeft :: Level -> Level
-moveToLeft (Level [] x rs) = moveToLeft (Level [emptyChunck] x rs)
-moveToLeft (Level (l:ls) x rs) = Level ls l (x:rs)
+moveToLeft (Level [] x rs)     = moveToLeft (Level [emptyChunck] x rs)
+moveToLeft (Level (l:ls) x rs) = Level ls l (x : rs)
 
 moveToRight :: Level -> Level
-moveToRight (Level ls x []) = moveToRight (Level ls x [emptyChunck])
-moveToRight (Level ls x (r:rs)) = Level (x:ls) r rs
+moveToRight (Level ls x [])     = moveToRight (Level ls x [emptyChunck])
+moveToRight (Level ls x (r:rs)) = Level (x : ls) r rs
 
 emptyChunck :: Chunck Block
 emptyChunck = Chunck (V.replicate chunckHeight (V.replicate chunckWidth Air))
 
 defaultChunck :: Chunck Block
-defaultChunck = Chunck (V.singleton (V.replicate chunckWidth Bedrock) 
-  V.++ V.replicate 9 (V.replicate chunckWidth Ground)
-  V.++ V.replicate (chunckHeight - 10) (V.replicate chunckWidth Air))
+defaultChunck =
+  Chunck
+    (V.singleton (V.replicate chunckWidth Bedrock) V.++
+     V.replicate 9 (V.replicate chunckWidth Ground) V.++
+     V.replicate (chunckHeight - 10) (V.replicate chunckWidth Air))
 
 defaultLevel :: Level
 defaultLevel = Level infChunks chunck infChunks
