@@ -40,12 +40,12 @@ imapChunck :: (Int -> Int -> a -> b) -> Chunck a -> Chunck b
 imapChunck func (Chunck cnk) = Chunck (V.imap (\y -> V.imap (`func` y)) cnk)
 
 -- | Convert Chunck to List of Lists
-chunckToList :: Chunck a -> [[a]]
-chunckToList (Chunck cnk) = map V.toList (V.toList cnk)
+chunckToLists :: Chunck a -> [[a]]
+chunckToLists (Chunck cnk) = map V.toList (V.toList cnk)
 
 -- | Convert List of Lists to Chunck
-chunckFromList :: [[a]] -> Chunck a
-chunckFromList lst = Chunck (V.fromList (map V.fromList lst))
+chunckFromLists :: [[a]] -> Chunck a
+chunckFromLists lst = Chunck (V.fromList (map V.fromList lst))
 
 moveToLeft :: Level -> Level
 moveToLeft (Level [] x rs)     = moveToLeft (Level [emptyChunck] x rs)
