@@ -21,7 +21,7 @@ drawWorld (WorldData player level) =
   (otherstuff <> drawPlayer player)
   where
     otherstuff = drawLevel level
-    viewportScale = 1.2
+    viewportScale = 1
 
 unitBlockPic :: Picture
 unitBlockPic = rectangleSolid unit unit

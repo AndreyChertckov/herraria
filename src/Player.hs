@@ -20,7 +20,7 @@ playerPicture = color rose (rectangleSolid unit unit)
 initPlayer :: PlayerData
 initPlayer =
   PlayerData
-    { playerCoords = (0, 0)
+    { playerCoords = unit * (8, 10)
     , playerPic = playerPicture
     , playerVelocity = initVelocity
     , playerAcceleration = initAcceleration

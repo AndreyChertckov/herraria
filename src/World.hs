@@ -1,7 +1,6 @@
 module World where
 
-import           Config                               (Direction (..),
-                                                       transCoords, unit)
+import           Config
 import           Debug.Trace                          (trace)
 import           Graphics.Gloss
 import           Graphics.Gloss.Data.Point.Arithmetic
@@ -17,6 +16,22 @@ data WorldData =
     , worldLevel  :: Level
     }
 
+scaleInput :: Point -> Point
+scaleInput = (*) (1 / unit)
+
+shiftInput :: Point -> Point
+shiftInput = (+) (unit / 2, unit / 2)
+
+mouseToPlayer :: Point -> Point
+mouseToPlayer = scaleInput . shiftInput
+
+pointToInt :: (Float, Float) -> (Int, Int)
+pointToInt (pntX, pntY) = (floor pntX, floor pntY)
+
+inputToChunckInt :: Point -> Point -> (Int, Int)
+inputToChunckInt playerPos mousePos =
+  pointToInt (scaleInput playerPos + mouseToPlayer mousePos)
+
 handleWorld :: Event -> WorldData -> WorldData
 handleWorld (EventKey (SpecialKey KeyUp) Down _ _) world@(WorldData player _) =
   world {worldPlayer = movePlayer player UP}
@@ -27,17 +42,27 @@ handleWorld (EventKey (SpecialKey KeyLeft) Down _ _) world@(WorldData player _) 
 handleWorld (EventKey (SpecialKey KeyRight) Down _ _) world@(WorldData player _) =
   world {worldPlayer = movePlayer player RIGHT}
 handleWorld (EventKey (MouseButton LeftButton) Down _ pos) world@(WorldData player level) =
-  trace
-    (show (uncurry transCoords pos))
-    (world
-       { worldLevel =
-           level
-             { curChunck =
-                 putBlock (transCoords putX putY) Ground (curChunck level)
-             }
-       })
-  where
-    (putX, putY) = pos + playerCoords player
+  world
+    { worldLevel =
+        level
+          { curChunck =
+              putBlock
+                (inputToChunckInt (playerCoords player) pos)
+                Ground
+                (curChunck level)
+          }
+    }
+handleWorld (EventKey (MouseButton RightButton) Down _ pos) world@(WorldData player level) =
+  world
+    { worldLevel =
+        level
+          { curChunck =
+              putBlock
+                (inputToChunckInt (playerCoords player) pos)
+                Air
+                (curChunck level)
+          }
+    }
 handleWorld _ world = world
 
 updatePhysics :: Float -> WorldData -> WorldData
