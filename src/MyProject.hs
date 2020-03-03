@@ -13,4 +13,4 @@ background :: Color
 background = white
 
 run :: IO ()
-run = play window background 0 initWorld drawWorld handleWorld animateWorld --display window background (drawPlayer initPlayer)
+run = play window background 30 initWorld drawWorld handleWorld updatePhysics --display window background (drawPlayer initPlayer)

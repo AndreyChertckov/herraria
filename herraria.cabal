@@ -4,7 +4,7 @@ cabal-version: 1.24
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1ecfc42fee7d416da1d7b8eaaa7602a2e64065ae1913e130b5c51c7d0e5574a6
+-- hash: b068f797a0904dcc34f7e5a4f504a29aa5e41a07ad96c512c4285aa119069602
 
 name:           herraria
 version:        0.0.1
@@ -35,6 +35,7 @@ library
       Config
       Draft
       MyProject
+      Physics
       Player
       Render
       World
