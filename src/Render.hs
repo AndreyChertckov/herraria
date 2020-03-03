@@ -1,6 +1,6 @@
 module Render where
 
-import           Config         (unit)
+import           Config         (Coords (Coords), unit)
 import           Graphics.Gloss
 import           Level
 import           Player
@@ -9,8 +9,18 @@ import           World
 airBlue :: Color
 airBlue = makeColorI 219 236 245 128
 
+focusOnPlayer :: PlayerData -> Picture -> Picture
+focusOnPlayer (PlayerData (Coords x y) _ _) = translate (-x) (-y)
+
+scaleViewPort :: Float -> Picture -> Picture
+scaleViewPort coef = scale coef coef
+
 drawWorld :: WorldData -> Picture
-drawWorld (WorldData player') = drawPlayer player' <> drawChunck defaultChunck
+drawWorld (WorldData player') =
+  scaleViewPort viewportScale . focusOnPlayer player' $ drawPlayer player'
+  where
+    otherstuff = drawLevel defaultLevel
+    viewportScale = 0.8
 
 unitBlockPic :: Picture
 unitBlockPic = rectangleSolid unit unit
@@ -32,12 +42,12 @@ drawChunckAt delta =
 drawChunck :: Chunck Block -> Picture
 drawChunck = mconcat . concat . chunckToLists . imapChunck drawBlockAt
 
-drawLevelChunks :: Int
-drawLevelChunks = 3
+loadedChuncksAmount :: Int
+loadedChuncksAmount = 3
 
 drawLevel :: Level -> Picture
 drawLevel (Level ls x rs) = leftChunks <> drawChunck x <> rightChunks
   where
-    amount = drawLevelChunks `div` 2
+    amount = loadedChuncksAmount `div` 2
     leftChunks = mconcat (zipWith drawChunckAt [-amount .. 1] (take amount ls))
     rightChunks = mconcat (zipWith drawChunckAt [1 .. amount] (take amount rs))
