@@ -1,4 +1,4 @@
-module Config where
+module Herraria.Config where
 
 data Direction
   = UP

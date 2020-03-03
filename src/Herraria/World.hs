@@ -1,13 +1,11 @@
-module World where
+module Herraria.World where
 
-import           Config
-import           Debug.Trace                          (trace)
 import           Graphics.Gloss
 import           Graphics.Gloss.Data.Point.Arithmetic
 import           Graphics.Gloss.Interface.IO.Interact
-import           Level
-import           Physics
-import           Player
+import           Herraria.Config
+import           Herraria.Level
+import           Herraria.Player
 import           Prelude                              hiding ((*), (+), (-))
 
 data WorldData =

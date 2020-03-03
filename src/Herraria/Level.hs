@@ -1,7 +1,6 @@
-module Level where
+module Herraria.Level where
 
-import qualified Data.Vector         as V
-import           Data.Vector.Mutable (write)
+import qualified Data.Vector as V
 
 data Block
   = Air

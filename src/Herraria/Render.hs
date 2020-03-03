@@ -1,10 +1,10 @@
-module Render where
+module Herraria.Render where
 
-import           Config         (unit)
 import           Graphics.Gloss
-import           Level
-import           Player
-import           World
+import           Herraria.Config (unit)
+import           Herraria.Level
+import           Herraria.Player
+import           Herraria.World
 
 airBlue :: Color
 airBlue = makeColorI 219 236 245 128

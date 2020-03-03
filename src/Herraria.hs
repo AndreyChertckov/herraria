@@ -2,9 +2,9 @@ module Herraria where
 
 import           Graphics.Gloss
 import           Graphics.Gloss.Interface.IO.Game
-import           Player
-import           Render
-import           World
+import           Herraria.Player
+import           Herraria.Render
+import           Herraria.World
 
 window :: Display
 window = InWindow "Herraria" (800, 800) (10, 10)

@@ -1,6 +1,6 @@
-module Physics where
+module Herraria.Physics where
 
-import           Config
+import           Herraria.Config
 import           Graphics.Gloss.Data.Point.Arithmetic
 
 type Acceleration = Point

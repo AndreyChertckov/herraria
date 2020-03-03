@@ -4,7 +4,7 @@ cabal-version: 1.24
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c393117bf03780da3882aed2e6c82a357d90a058381e8ee9210803fa74c49dba
+-- hash: f6cb49fd6907f88a489c61b46d5926269b46b83bff2bae53303a69d09db2f2d3
 
 name:           herraria
 version:        0.0.1
@@ -32,13 +32,13 @@ custom-setup
 
 library
   exposed-modules:
-      Config
       Herraria
-      Level
-      Physics
-      Player
-      Render
-      World
+      Herraria.Config
+      Herraria.Level
+      Herraria.Physics
+      Herraria.Player
+      Herraria.Render
+      Herraria.World
   other-modules:
       Paths_herraria
   hs-source-dirs:

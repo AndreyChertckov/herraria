@@ -1,9 +1,9 @@
-module Player where
+module Herraria.Player where
 
-import           Config
+import           Herraria.Config
 import           Graphics.Gloss
 import           Graphics.Gloss.Data.Point.Arithmetic
-import           Physics
+import           Herraria.Physics
 import           Prelude                              hiding ((*))
 
 data PlayerData =
