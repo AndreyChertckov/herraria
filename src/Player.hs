@@ -16,7 +16,10 @@ playerPicture = color rose (rectangleSolid unit unit)
 initPlayer :: PlayerData
 initPlayer =
   PlayerData
-    {playerCoords = Coords 0 0, playerPic = playerPicture, playerSpeed = 1}
+    { playerCoords = Coords 0 (unit * 10)
+    , playerPic = playerPicture
+    , playerSpeed = 1
+    }
 
 drawPlayer :: PlayerData -> Picture
 drawPlayer (PlayerData coordinates' picture' _) = translate x' y' picture'

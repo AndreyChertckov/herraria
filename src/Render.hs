@@ -16,11 +16,12 @@ scaleViewPort :: Float -> Picture -> Picture
 scaleViewPort coef = scale coef coef
 
 drawWorld :: WorldData -> Picture
-drawWorld (WorldData player') =
-  scaleViewPort viewportScale . focusOnPlayer player' $ drawPlayer player'
+drawWorld (WorldData player level) =
+  scaleViewPort viewportScale . focusOnPlayer player $
+  (otherstuff <> drawPlayer player)
   where
-    otherstuff = drawLevel defaultLevel
-    viewportScale = 0.8
+    otherstuff = drawLevel level
+    viewportScale = 1.2
 
 unitBlockPic :: Picture
 unitBlockPic = rectangleSolid unit unit
