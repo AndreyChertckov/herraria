@@ -1,6 +1,7 @@
 module Level where
 
-import qualified Data.Vector as V
+import qualified Data.Vector         as V
+import           Data.Vector.Mutable (write)
 
 data Block
   = Air
@@ -11,7 +12,9 @@ data Block
 -- | Chunck of Blocks
 -- Dimensions: chunckHeight by chunckWidth
 newtype Chunck a =
-  Chunck (V.Vector (V.Vector a))
+  Chunck
+    { getChunck :: V.Vector (V.Vector a)
+    }
   deriving (Show)
 
 -- | Level is an infinite list of chuncks
@@ -34,6 +37,15 @@ chunckWidth = 16
 -- | Apply function to each element of Chunck
 instance Functor Chunck where
   fmap f (Chunck cnk) = Chunck (V.map (V.map f) cnk)
+
+-- | Put given block to given position in Chunck
+putBlock :: (Int, Int) -> Block -> Chunck Block -> Chunck Block
+putBlock (x, y) blk =
+  imapChunck
+    (\x' y' inp ->
+       if x == x' && y == y'
+         then blk
+         else inp)
 
 -- | Apply a function to every element of a chunck and its position
 imapChunck :: (Int -> Int -> a -> b) -> Chunck a -> Chunck b
