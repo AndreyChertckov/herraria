@@ -4,7 +4,7 @@ cabal-version: 1.24
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f6cb49fd6907f88a489c61b46d5926269b46b83bff2bae53303a69d09db2f2d3
+-- hash: dfd7006895c3b9ae14d5b177a9d55cf88c708683a2a2cf3eb726a3e974b61fcd
 
 name:           herraria
 version:        0.0.1
@@ -27,8 +27,6 @@ custom-setup
       Cabal
     , base
     , cabal-doctest >=1.0.2 && <1.1
-    , gloss
-    , vector
 
 library
   exposed-modules:
@@ -46,6 +44,7 @@ library
   ghc-options: -Wall -fno-warn-type-defaults
   build-depends:
       base >=4.7 && <5
+    , containers
     , gloss
     , vector
   default-language: Haskell2010
@@ -59,6 +58,7 @@ executable my-project-exe
   ghc-options: -Wall -fno-warn-type-defaults -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , containers
     , gloss
     , herraria
     , vector
@@ -74,6 +74,7 @@ test-suite doctests
       Glob
     , QuickCheck
     , base
+    , containers
     , doctest
     , gloss
     , template-haskell
@@ -93,6 +94,7 @@ test-suite spec
       HUnit
     , QuickCheck
     , base >=4.7 && <5
+    , containers
     , gloss
     , herraria
     , hspec

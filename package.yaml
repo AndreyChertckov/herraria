@@ -22,8 +22,6 @@ description:         Please see the README on GitHub
 custom-setup:
   dependencies:
   - base
-  - gloss
-  - vector
   - Cabal
   - cabal-doctest >=1.0.2 && <1.1
 
@@ -31,9 +29,10 @@ ghc-options:
 - -Wall -fno-warn-type-defaults
 
 dependencies:
+- base >= 4.7 && < 5
 - gloss
 - vector
-- base >= 4.7 && < 5
+- containers
 
 library:
   source-dirs: src
