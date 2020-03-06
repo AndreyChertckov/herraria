@@ -42,8 +42,6 @@ blockToPut LeftButton = Ground
 blockToPut _          = Air
 
 handleWorld :: Event -> GameState -> GameState
-handleWorld (EventKey key state _ _) world@(GameState _ _ keys) =
-  world {gameKeys = updatePressed state key keys}
 handleWorld (EventKey (MouseButton btn) Down _ pos) world@(GameState player level _) =
   world
     { gameLevel =
@@ -55,6 +53,8 @@ handleWorld (EventKey (MouseButton btn) Down _ pos) world@(GameState player leve
                 (curChunck level)
           }
     }
+handleWorld (EventKey key state _ _) world@(GameState _ _ keys) =
+  world {gameKeys = updatePressed state key keys}
 handleWorld _ world = world
 
 keyToDirection :: Key -> Maybe Direction
