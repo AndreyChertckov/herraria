@@ -1,8 +1,6 @@
 module Herraria where
 
 import           Graphics.Gloss
-import           Graphics.Gloss.Interface.IO.Game
-import           Herraria.Player
 import           Herraria.Render
 import           Herraria.World
 

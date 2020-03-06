@@ -11,14 +11,14 @@ airBlue = makeColorI 219 236 245 128
 
 -- Make use of Gloss.Viewport functions
 -- | Center the view on the player
-focusOnPlayer :: PlayerData -> Picture -> Picture
-focusOnPlayer (PlayerData (x, y) _ _ _) = translate (-x) (-y)
+focusOnPlayer :: Player -> Picture -> Picture
+focusOnPlayer (Player (x, y) _ _) = translate (-x) (-y)
 
 scaleViewPort :: Float -> Picture -> Picture
 scaleViewPort coef = scale coef coef
 
-drawWorld :: WorldData -> Picture
-drawWorld (WorldData player level) =
+drawWorld :: GameState -> Picture
+drawWorld (GameState player level _) =
   scaleViewPort viewportScale . focusOnPlayer player $
   (otherstuff <> drawPlayer player)
   where

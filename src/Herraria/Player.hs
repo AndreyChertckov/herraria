@@ -1,36 +1,36 @@
 module Herraria.Player where
 
-import           Herraria.Config
 import           Graphics.Gloss
-import           Graphics.Gloss.Data.Point.Arithmetic
+import qualified Graphics.Gloss.Data.Point.Arithmetic as P
+import           Herraria.Config
 import           Herraria.Physics
-import           Prelude                              hiding ((*))
 
-data PlayerData =
-  PlayerData
+data Player =
+  Player
     { playerCoords       :: Point
     , playerPic          :: Picture
     , playerVelocity     :: Velocity
-    , playerAcceleration :: Acceleration
     }
+
+basePlayerSpeed :: Float
+basePlayerSpeed = 60
 
 playerPicture :: Picture
 playerPicture = color rose (rectangleSolid unit unit)
 
-initPlayer :: PlayerData
+initPlayer :: Player
 initPlayer =
-  PlayerData
-    { playerCoords = unit * (8, 10)
+  Player
+    { playerCoords = unit P.* (8, 10)
     , playerPic = playerPicture
     , playerVelocity = initVelocity
-    , playerAcceleration = initAcceleration
     }
 
-drawPlayer :: PlayerData -> Picture
-drawPlayer (PlayerData (x, y) picture' _ _) = translate x y picture'
+drawPlayer :: Player -> Picture
+drawPlayer (Player (x, y) picture' _) = translate x y picture'
 
-movePlayer :: PlayerData -> Direction -> PlayerData
-movePlayer player UP    = player {playerVelocity = 0.5 * (0, unit)}
-movePlayer player RIGHT = player {playerVelocity = 0.5 * (unit, 0)}
-movePlayer player LEFT  = player {playerVelocity = (-0.5) * (unit, 0)}
+movePlayer :: Player -> Direction -> Player
+movePlayer player UP    = player {playerVelocity = 0.5 P.* (0, unit)}
+movePlayer player RIGHT = player {playerVelocity = 0.5 P.* (unit, 0)}
+movePlayer player LEFT  = player {playerVelocity = (-0.5) P.* (unit, 0)}
 movePlayer player _     = player
