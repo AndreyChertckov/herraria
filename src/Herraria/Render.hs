@@ -20,10 +20,16 @@ scaleViewPort coef = scale coef coef
 drawWorld :: GameState -> Picture
 drawWorld (GameState player level _) =
   scaleViewPort viewportScale . focusOnPlayer player $
-  (otherstuff <> drawPlayer player)
+  (otherstuff <> drawPlayer player <> drawGrid)
   where
     otherstuff = drawLevel level
     viewportScale = 1
+
+drawGrid :: Picture
+drawGrid = translate (-unit/2) (-unit/2) (horizontal <> vertical)
+  where
+    horizontal = pictures . map line $ [[(unit * fromIntegral x, unit * fromIntegral y) | x <- [0..chunckWidth]] | y <- [0..chunckHeight]]
+    vertical = pictures . map line $ [[(unit * fromIntegral x, unit * fromIntegral y) | y <- [0..chunckHeight]] | x <- [0..chunckWidth]]
 
 unitBlockPic :: Picture
 unitBlockPic = rectangleSolid unit unit
