@@ -1,7 +1,7 @@
 module Herraria.Physics where
 
-import           Herraria.Config
 import           Graphics.Gloss.Data.Point.Arithmetic
+import           Herraria.Config
 
 type Acceleration = Point
 
@@ -15,3 +15,5 @@ initVelocity = (0.0, 0.0)
 
 friction :: Acceleration
 friction = (unit, 0)
+-- Add static and moving bodies of rectangle form
+-- to check collisions among them

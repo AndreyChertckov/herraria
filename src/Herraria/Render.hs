@@ -9,6 +9,8 @@ import           Herraria.World
 airBlue :: Color
 airBlue = makeColorI 219 236 245 128
 
+-- Make use of Gloss.Viewport functions
+-- | Center the view on the player
 focusOnPlayer :: PlayerData -> Picture -> Picture
 focusOnPlayer (PlayerData (x, y) _ _ _) = translate (-x) (-y)
 

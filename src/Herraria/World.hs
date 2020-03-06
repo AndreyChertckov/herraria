@@ -14,6 +14,14 @@ data WorldData =
     , worldLevel  :: Level
     }
 
+{-
+data GameState =
+  GameState
+    { gamePlayer :: Player
+    , gameLevel  :: Level
+    , gameKeys   :: Set Key -- from containers Set.Immutable
+    }
+-}
 scaleInput :: Point -> Point
 scaleInput = (*) (1 / unit)
 
