@@ -75,20 +75,26 @@ directionToVec DOWN  = (0, -1)
 directionToVec RIGHT = (1, 0)
 
 updatePhysics :: Float -> GameState -> GameState
-updatePhysics dt world@(GameState p@(Player coords _ vel) _ pressed) =
+updatePhysics dt world@(GameState p@(Player coords _ vel acc) _ pressed) =
   world {gamePlayer = p'}
   where
     p' =
       p
         { playerCoords = coords P.+ dt P.* vel
-        , playerVelocity =
-            basePlayerSpeed P.*
-            normalize
-              (foldr
-                 ((P.+) . directionToVec)
-                 (0, 0)
-                 (mapMaybe keyToDirection . S.toList $ pressed))
-        }
+        , playerVelocity =  playerSpeed' --vel P.+ dt P.* acc
+        , playerAcceleration = playerAcceleration'
+        } 
+    playerSpeed' = (playerSpeedX, playerSpeedY)
+    playerSpeedX = (basePlayerSpeed / (1.0 + exp (-(fst acc)))) - (basePlayerSpeed / 2)
+    playerSpeedY = 0
+    playerAcceleration' = 
+        (basePlayerAcceleration P.*
+        normalize
+          (foldr
+            ((P.+) . directionToVec)
+            (0, 0)
+            (mapMaybe keyToDirection . S.toList $ pressed))
+        ) 
 
 initWorld :: GameState
 initWorld = GameState initPlayer defaultLevel S.empty
