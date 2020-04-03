@@ -12,7 +12,7 @@ airBlue = makeColorI 219 236 245 128
 -- Make use of Gloss.Viewport functions
 -- | Center the view on the player
 focusOnPlayer :: Player -> Picture -> Picture
-focusOnPlayer (Player (x, y) _ _ _) = translate (-x) (-y)
+focusOnPlayer (Player (x, y) _ _ _ _) = translate (-x) (-y)
 
 scaleViewPort :: Float -> Picture -> Picture
 scaleViewPort coef = scale coef coef
