@@ -29,6 +29,9 @@ initAcceleration = (0.0, 0.0)
 initVelocity :: Velocity
 initVelocity = (0.0, 0.0)
 
+gravity :: Acceleration
+gravity = (0.0, -9.0)
+
 checkCollision :: RigidBody -> RigidBody -> Bool
 checkCollision (RectangleBody (x1, y1) (width1, height1)) (RectangleBody (x2, y2) (width2, height2))
     = x1 < x2 + width2 
@@ -41,3 +44,4 @@ checkCollision (CircleBody centralPoint1 r1) (CircleBody centralPoint2 r2)
       dxdy = centralPoint1 P.- centralPoint2
       distance = sqrt ((fst dxdy) ** 2 + (snd dxdy) ** 2)
 checkCollision _ _ = False
+
