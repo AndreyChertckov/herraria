@@ -29,8 +29,8 @@ mouseToPlayer = scaleInput . shiftInput
 pointToInt :: (Float, Float) -> (Int, Int)
 pointToInt (pntX, pntY) = (floor pntX, floor pntY)
 
-inputToChunckInt :: Point -> Point -> (Int, Int)
-inputToChunckInt playerPos mousePos =
+inputToChunkInt :: Point -> Point -> (Int, Int)
+inputToChunkInt playerPos mousePos =
   pointToInt (scaleInput playerPos P.+ mouseToPlayer mousePos)
 
 updatePressed :: KeyState -> Key -> S.Set Key -> S.Set Key
@@ -46,11 +46,11 @@ handleWorld (EventKey (MouseButton btn) Down _ pos) world@(GameState player leve
   world
     { gameLevel =
         level
-          { curChunck =
+          { curChunk =
               putBlock
-                (inputToChunckInt (playerCoords player) pos)
+                (inputToChunkInt (playerCoords player) pos)
                 (blockToPut btn)
-                (curChunck level)
+                (curChunk level)
           }
     }
 handleWorld (EventKey key state _ _) world@(GameState _ _ keys) =
@@ -86,10 +86,10 @@ checkCollisionWithLevel
     :: RigidBody
     -> Level
     -> Bool
-checkCollisionWithLevel pl (Level _ chunck _) = any (checkCollision pl) rigidBodiesList
+checkCollisionWithLevel pl (Level _ chunk _) = any (checkCollision pl) rigidBodiesList
   where
-    rigidBodies = imapChunck blockToRigidBody chunck
-    rigidBodiesList = (catMaybes . concat . chunckToLists) rigidBodies
+    rigidBodies = imapChunk blockToRigidBody chunk
+    rigidBodiesList = (catMaybes . concat . chunkToLists) rigidBodies
 
 updatePhysics :: Float -> GameState -> GameState
 updatePhysics dt world@(GameState p@(Player coords _ vel acc rb) gl pressed) =

@@ -28,8 +28,8 @@ drawWorld (GameState player level _) =
 drawGrid :: Picture
 drawGrid = translate (-unit/2) (-unit/2) (horizontal <> vertical)
   where
-    horizontal = pictures . map line $ [[(unit * fromIntegral x, unit * fromIntegral y) | x <- [0..chunckWidth]] | y <- [0..chunckHeight]]
-    vertical = pictures . map line $ [[(unit * fromIntegral x, unit * fromIntegral y) | y <- [0..chunckHeight]] | x <- [0..chunckWidth]]
+    horizontal = pictures . map line $ [[(unit * fromIntegral x, unit * fromIntegral y) | x <- [0..chunkWidth]] | y <- [0..chunkHeight]]
+    vertical = pictures . map line $ [[(unit * fromIntegral x, unit * fromIntegral y) | y <- [0..chunkHeight]] | x <- [0..chunkWidth]]
 
 unitBlockPic :: Picture
 unitBlockPic = rectangleSolid unit unit
@@ -44,19 +44,19 @@ drawBlockAt :: Int -> Int -> Block -> Picture
 drawBlockAt x y =
   translate (unit * fromIntegral x) (unit * fromIntegral y) . drawBlock
 
-drawChunckAt :: Int -> Chunck Block -> Picture
-drawChunckAt delta =
-  translate (unit * fromIntegral (chunckWidth * delta)) 0 . drawChunck
+drawChunkAt :: Int -> Chunk Block -> Picture
+drawChunkAt delta =
+  translate (unit * fromIntegral (chunkWidth * delta)) 0 . drawChunk
 
-drawChunck :: Chunck Block -> Picture
-drawChunck = mconcat . concat . chunckToLists . imapChunck drawBlockAt
+drawChunk :: Chunk Block -> Picture
+drawChunk = mconcat . concat . chunkToLists . imapChunk drawBlockAt
 
-loadedChuncksAmount :: Int
-loadedChuncksAmount = 3
+loadedChunksAmount :: Int
+loadedChunksAmount = 3
 
 drawLevel :: Level -> Picture
-drawLevel (Level ls x rs) = leftChunks <> drawChunck x <> rightChunks
+drawLevel (Level ls x rs) = leftChunks' <> drawChunk x <> rightChunks'
   where
-    amount = loadedChuncksAmount `div` 2
-    leftChunks = mconcat (zipWith drawChunckAt [-amount .. 1] (take amount ls))
-    rightChunks = mconcat (zipWith drawChunckAt [1 .. amount] (take amount rs))
+    amount = loadedChunksAmount `div` 2
+    leftChunks' = mconcat (zipWith drawChunkAt [-amount .. 1] (take amount ls))
+    rightChunks' = mconcat (zipWith drawChunkAt [1 .. amount] (take amount rs))
