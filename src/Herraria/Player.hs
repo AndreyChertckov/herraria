@@ -37,8 +37,3 @@ initPlayer =
 
 drawPlayer :: Player -> Picture
 drawPlayer (Player (x, y) picture' _ _ _) = translate x y picture'
-
--- movePlayer :: Player -> Direction -> Player
--- movePlayer player UP    = player {playerAcceleration = 0.5 P.* (0, unit)}
--- movePlayer player RIGHT = player {playerAcceleration = 0.5 P.* (unit, 0)}
--- movePlayer player LEFT  = player {playerAcceleration = (-0.5) P.* (unit, 0)}

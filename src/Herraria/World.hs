@@ -7,7 +7,7 @@ import qualified Graphics.Gloss.Data.Point.Arithmetic as P
 import           Graphics.Gloss.Interface.IO.Interact
 import           Herraria.Config
 import           Herraria.Level
-import           Herraria.Physics                     (RigidBody(..), normalize, checkCollision)
+import           Herraria.Physics                     (RigidBody(..), normalize, checkCollision, gravity)
 import           Herraria.Player
 
 data GameState =
@@ -97,15 +97,24 @@ updatePhysics dt world@(GameState p@(Player coords _ vel acc rb) gl pressed) =
   where
     p' =
       p
-        { playerCoords = if checkCollisionWithLevel rb gl then coords else playerCoords'
+        { playerCoords = if checkCollisionWithLevel rb' gl then coords else playerCoords'
         , playerVelocity =  playerSpeed' --vel P.+ dt P.* acc
         , playerAcceleration = playerAcceleration'
-        , rigidBody = rb { _coords = playerCoords'} 
+        , rigidBody = rb'
         } 
-    playerCoords' = coords P.+ dt P.* vel
-    playerSpeed' = (playerSpeedX, playerSpeedY)
-    playerSpeedX = (basePlayerSpeed / (1.0 + exp (-(fst acc)))) - (basePlayerSpeed / 2)
-    playerSpeedY = 0
+    playerCoordsX = coords P.+ dt P.* playerSpeedX
+    playerCoordsY = coords P.+ dt P.* playerSpeedY
+    (playerCoords', playerSpeed') = case (checkCollisionWithLevel rbX gl, checkCollisionWithLevel rbY gl) of
+          (False, False) -> ((fst playerCoordsX, snd playerCoordsY), playerSpeedX P.+ playerSpeedY)
+          (True, False)  -> (playerCoordsY, playerSpeedY)
+          (False, True)  -> (playerCoordsX, playerSpeedX)
+          (True, True)   -> (coords, vel)
+        where
+          rbX = rb {_coords = playerCoordsX}
+          rbY = rb {_coords = playerCoordsY}
+    rb' = rb { _coords = playerCoords'} 
+    playerSpeedX = ((basePlayerSpeed / (1.0 + exp (-(fst acc)))) - (basePlayerSpeed / 2), 0)
+    playerSpeedY = (0, (snd vel) + dt * (snd playerAcceleration'))
     playerAcceleration' = 
         (basePlayerAcceleration P.*
             normalize
@@ -113,7 +122,7 @@ updatePhysics dt world@(GameState p@(Player coords _ vel acc rb) gl pressed) =
                 ((P.+) . directionToVec)
                 (0, 0)
                 (mapMaybe keyToDirection . S.toList $ pressed))
-        ) 
+        ) P.+ gravity
 
 initWorld :: GameState
 initWorld = GameState initPlayer defaultLevel S.empty
