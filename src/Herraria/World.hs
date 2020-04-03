@@ -1,13 +1,13 @@
 module Herraria.World where
 
-import           Data.Maybe                           (mapMaybe)
+import           Data.Maybe                           (mapMaybe, catMaybes)
 import qualified Data.Set                             as S
 import           Graphics.Gloss
 import qualified Graphics.Gloss.Data.Point.Arithmetic as P
 import           Graphics.Gloss.Interface.IO.Interact
 import           Herraria.Config
 import           Herraria.Level
-import           Herraria.Physics                     (normalize)
+import           Herraria.Physics                     (RigidBody(..), normalize, checkCollision)
 import           Herraria.Player
 
 data GameState =
@@ -74,26 +74,45 @@ directionToVec LEFT  = (-1, 0)
 directionToVec DOWN  = (0, -1)
 directionToVec RIGHT = (1, 0)
 
+blockToRigidBody :: Int -> Int -> Block -> Maybe RigidBody
+blockToRigidBody _ _ (Air) = Nothing
+blockToRigidBody x y _ = Just rb
+  where
+    x' = fromIntegral x
+    y' = fromIntegral y
+    rb = RectangleBody (unit P.* (x', y')) (unit, unit)
+
+checkCollisionWithLevel 
+    :: RigidBody
+    -> Level
+    -> Bool
+checkCollisionWithLevel pl (Level _ chunck _) = any (checkCollision pl) rigidBodiesList
+  where
+    rigidBodies = imapChunck blockToRigidBody chunck
+    rigidBodiesList = (catMaybes . concat . chunckToLists) rigidBodies
+
 updatePhysics :: Float -> GameState -> GameState
-updatePhysics dt world@(GameState p@(Player coords _ vel acc) _ pressed) =
+updatePhysics dt world@(GameState p@(Player coords _ vel acc rb) gl pressed) =
   world {gamePlayer = p'}
   where
     p' =
       p
-        { playerCoords = coords P.+ dt P.* vel
+        { playerCoords = if checkCollisionWithLevel rb gl then coords else playerCoords'
         , playerVelocity =  playerSpeed' --vel P.+ dt P.* acc
         , playerAcceleration = playerAcceleration'
+        , rigidBody = rb { _coords = playerCoords'} 
         } 
+    playerCoords' = coords P.+ dt P.* vel
     playerSpeed' = (playerSpeedX, playerSpeedY)
     playerSpeedX = (basePlayerSpeed / (1.0 + exp (-(fst acc)))) - (basePlayerSpeed / 2)
     playerSpeedY = 0
     playerAcceleration' = 
         (basePlayerAcceleration P.*
-        normalize
-          (foldr
-            ((P.+) . directionToVec)
-            (0, 0)
-            (mapMaybe keyToDirection . S.toList $ pressed))
+            normalize
+              (foldr
+                ((P.+) . directionToVec)
+                (0, 0)
+                (mapMaybe keyToDirection . S.toList $ pressed))
         ) 
 
 initWorld :: GameState

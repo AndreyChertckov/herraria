@@ -11,6 +11,7 @@ data Player =
     , playerPic          :: Picture
     , playerVelocity     :: Velocity
     , playerAcceleration :: Acceleration
+    , rigidBody          :: RigidBody
     }
 
 basePlayerSpeed :: Float
@@ -29,13 +30,15 @@ initPlayer =
     , playerPic = playerPicture
     , playerVelocity = initVelocity
     , playerAcceleration = initAcceleration
+    , rigidBody = RectangleBody { _coords      = unit P.* (8,10)
+                                , _widthHeight = unit P.* (1, 1)
+                                }
     }
 
 drawPlayer :: Player -> Picture
-drawPlayer (Player (x, y) picture' _ _) = translate x y picture'
+drawPlayer (Player (x, y) picture' _ _ _) = translate x y picture'
 
-movePlayer :: Player -> Direction -> Player
-movePlayer player UP    = player {playerAcceleration = 0.5 P.* (0, unit)}
-movePlayer player RIGHT = player {playerAcceleration = 0.5 P.* (unit, 0)}
-movePlayer player LEFT  = player {playerAcceleration = (-0.5) P.* (unit, 0)}
-movePlayer player _     = player
+-- movePlayer :: Player -> Direction -> Player
+-- movePlayer player UP    = player {playerAcceleration = 0.5 P.* (0, unit)}
+-- movePlayer player RIGHT = player {playerAcceleration = 0.5 P.* (unit, 0)}
+-- movePlayer player LEFT  = player {playerAcceleration = (-0.5) P.* (unit, 0)}
