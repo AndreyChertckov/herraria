@@ -55,8 +55,9 @@ loadedChunksAmount :: Int
 loadedChunksAmount = 3
 
 drawLevel :: Level -> Picture
-drawLevel (Level ls x rs) = leftChunks' <> drawChunk x <> rightChunks'
+drawLevel (Level ls x rs i) = translate ofset 0 (leftChunks' <> drawChunk x <> rightChunks')
   where
     amount = loadedChunksAmount `div` 2
     leftChunks' = mconcat (zipWith drawChunkAt [-amount .. 1] (take amount ls))
     rightChunks' = mconcat (zipWith drawChunkAt [1 .. amount] (take amount rs))
+    ofset = (fromIntegral (i * chunkWidth)) * unit

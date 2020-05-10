@@ -11,8 +11,8 @@ data Player =
     , playerPic          :: Picture
     , playerVelocity     :: Velocity
     , playerAcceleration :: Acceleration
-    , rigidBody          :: RigidBody
-    }
+    , rigidBody          :: RigidBody Player
+    } deriving (Show)
 
 basePlayerSpeed :: Float
 basePlayerSpeed = 60
@@ -32,6 +32,7 @@ initPlayer =
     , playerAcceleration = initAcceleration
     , rigidBody = RectangleBody { _coords      = unit P.* (8,10)
                                 , _widthHeight = unit P.* (1, 1)
+                                , _object      = initPlayer
                                 }
     }
 

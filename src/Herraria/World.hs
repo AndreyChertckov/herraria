@@ -29,9 +29,9 @@ mouseToPlayer = scaleInput . shiftInput
 pointToInt :: (Float, Float) -> (Int, Int)
 pointToInt (pntX, pntY) = (floor pntX, floor pntY)
 
-inputToChunkInt :: Point -> Point -> (Int, Int)
-inputToChunkInt playerPos mousePos =
-  pointToInt (scaleInput playerPos P.+ mouseToPlayer mousePos)
+inputToChunkInt :: Float -> Point -> Point -> (Int, Int)
+inputToChunkInt ofset playerPos mousePos =
+  pointToInt (scaleInput (playerPos P.- (ofset, 0)) P.+ mouseToPlayer mousePos)
 
 updatePressed :: KeyState -> Key -> S.Set Key -> S.Set Key
 updatePressed Down = S.insert
@@ -48,11 +48,13 @@ handleWorld (EventKey (MouseButton btn) Down _ pos) world@(GameState player leve
         level
           { curChunk =
               putBlock
-                (inputToChunkInt (playerCoords player) pos)
+                (inputToChunkInt ofset (playerCoords player) pos)
                 (blockToPut btn)
                 (curChunk level)
           }
     }
+  where
+    ofset = unit * fromIntegral (chunkWidth * curIndex level)
 handleWorld (EventKey key state _ _) world@(GameState _ _ keys) =
   world {gameKeys = updatePressed state key keys}
 handleWorld _ world = world
@@ -74,30 +76,40 @@ directionToVec LEFT  = (-1, 0)
 directionToVec DOWN  = (0, -1)
 directionToVec RIGHT = (1, 0)
 
-blockToRigidBody :: Int -> Int -> Block -> Maybe RigidBody
-blockToRigidBody _ _ (Air) = Nothing
-blockToRigidBody x y _ = Just rb
-  where
-    x' = fromIntegral x
-    y' = fromIntegral y
-    rb = RectangleBody (unit P.* (x', y')) (unit, unit)
-
 checkCollisionWithLevel 
-    :: RigidBody
+    :: RigidBody Player
     -> Level
     -> Bool
-checkCollisionWithLevel pl (Level _ chunk _) = any (checkCollision pl) rigidBodiesList
+checkCollisionWithLevel pl (Level _ chunk _ i) = any (checkCollision pl) rigidBodiesList
   where
-    rigidBodies = imapChunk blockToRigidBody chunk
+    rigidBodies = imapChunk (blockToRigidBody (fromIntegral (i * chunkWidth))) chunk
     rigidBodiesList = (catMaybes . concat . chunkToLists) rigidBodies
+
+-- | Check either point in chunk or not. 
+-- Return Nothing if in chunk.
+-- Return Just Left if the point left from chunk.
+-- Return Just Right if the point right from chunk.
+notInChunk :: Float -> Point -> Chunk Block -> Maybe Direction
+notInChunk ofset (x, _) chunk = result
+  where
+    chunkCoords = (chunkToLists . imapChunk blockToCoords) chunk
+    leftMostChunk = head (head chunkCoords) 
+    rightMostChunk = last (head chunkCoords) 
+    leftMostCoord = ofset * unit + fst (fst leftMostChunk)
+    rightMostCoord = ofset * unit + fst (fst rightMostChunk) + fst (snd rightMostChunk)
+    result
+      | x <= leftMostCoord         = Just LEFT
+      | x + unit >= rightMostCoord = Just RIGHT
+      | otherwise                  = Nothing
+    
 
 updatePhysics :: Float -> GameState -> GameState
 updatePhysics dt world@(GameState p@(Player coords _ vel acc rb) gl pressed) =
-  world {gamePlayer = p'}
+  world {gamePlayer = p', gameLevel=level'}
   where
     p' =
       p
-        { playerCoords = if checkCollisionWithLevel rb' gl then coords else playerCoords'
+        { playerCoords = playerCoords'-- if checkCollisionWithLevel rb' gl then coords else playerCoords'
         , playerVelocity =  playerSpeed' --vel P.+ dt P.* acc
         , playerAcceleration = playerAcceleration'
         , rigidBody = rb'
@@ -123,6 +135,14 @@ updatePhysics dt world@(GameState p@(Player coords _ vel acc rb) gl pressed) =
                 (0, 0)
                 (mapMaybe keyToDirection . S.toList $ pressed))
         ) P.+ gravity
+    
+    ofset = fromIntegral ((curIndex gl) * chunkWidth)
+    level' = case notInChunk ofset playerCoords' (curChunk gl) of 
+              Nothing    -> gl
+              Just LEFT  -> moveToLeft gl
+              Just RIGHT -> moveToRight gl
+              _          -> gl
+
 
 initWorld :: GameState
 initWorld = GameState initPlayer defaultLevel S.empty

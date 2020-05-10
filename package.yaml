@@ -33,6 +33,8 @@ dependencies:
 - gloss
 - vector
 - containers
+- QuickCheck
+- random
 
 library:
   source-dirs: src
