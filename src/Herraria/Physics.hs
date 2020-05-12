@@ -53,7 +53,7 @@ applyMomentGravity rbs rb
   | any (checkCollision rb) rbs = rb
   | otherwise = applyMomentGravity rbs (move rb)
     where
-      move rb = rb {_coords = coords'}
+      move rb' = rb' {_coords = coords'}
         where
-          coords' = (_coords rb) P.- (unit P.* (0, -1.0))
+          coords' = (_coords rb') P.- (unit P.* (0, -1.0))
 
