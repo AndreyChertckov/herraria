@@ -7,9 +7,6 @@ data Direction
   | RIGHT
   deriving (Show, Eq, Enum)
 
-baseMovement :: Float
-baseMovement = 20
-
--- TODO: Use 1 unit len size, multiply drawGame on `gameSize = n`
+-- | Base unit scale
 unit :: Float
 unit = 30.0

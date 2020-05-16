@@ -1,3 +1,4 @@
+-- | Module with generation of the level
 module Herraria.Level where
 
 import qualified Data.Vector as V
@@ -61,27 +62,35 @@ putBlock (x, y) blk =
          then blk
          else inp)
 
--- | Apply a function to every element of a chunk and its position
+-- | Apply a function to every element of a chunk and its position.
 imapChunk :: (Int -> Int -> a -> b) -> Chunk a -> Chunk b
 imapChunk func (Chunk cnk) = Chunk (V.imap (\y -> V.imap (`func` y)) cnk)
 
--- | Convert Chunk to List of Lists
+-- | Convert Chunk to List of Lists.
 chunkToLists :: Chunk a -> [[a]]
 chunkToLists (Chunk cnk) = map V.toList (V.toList cnk)
 
--- | Convert List of Lists to Chunk
+-- | Convert List of Lists to Chunk.
 chunkFromLists :: [[a]] -> Chunk a
 chunkFromLists lst = Chunk (V.fromList (map V.fromList lst))
 
+-- | Load next left chunk.
 moveToLeft :: Level -> Level
 moveToLeft (Level [] x rs i)     = moveToLeft (Level [emptyChunk] x rs i)
 moveToLeft (Level (l:ls) x rs i) = Level ls l (x : rs) (i-1)
 
+-- | Load next right chunk.
 moveToRight :: Level -> Level
 moveToRight (Level ls x [] i) = moveToRight (Level ls x [emptyChunk] i)
 moveToRight (Level ls x (r:rs) i) = Level (x : ls) r rs (i+1)
 
-blockToRigidBody :: Float -> Int -> Int -> Block -> Maybe (RigidBody Block)
+-- | Transform Block to Physical body.
+blockToRigidBody 
+  :: Float -- ^ Ofset of chunk regarding to zero chunk.
+  -> Int -- ^ X position of block in chunk.
+  -> Int -- ^ Y position of block in chunk.
+  -> Block -- ^ Type of block.
+  -> Maybe (RigidBody Block) -- ^ Physical body of the object, if block not equal to Air.
 blockToRigidBody _ _ _ (Air) = Nothing
 blockToRigidBody ofset x y b = Just rb
   where
@@ -89,25 +98,21 @@ blockToRigidBody ofset x y b = Just rb
     y' = fromIntegral y
     rb = RectangleBody (unit P.* (x', y')) (unit, unit) b
 
-
-fromRigidBody :: [RigidBody Block] -> V.Vector (V.Vector Block) -> V.Vector (V.Vector Block)
-fromRigidBody [] base = base
-fromRigidBody (b:bs) base = fromRigidBody bs base'
-  where
-    (x,y) = _coords b
-    obj = _object b
-    base' = getChunk (putBlock (x',y') obj (Chunk base))
-    x' = floor (x/unit)
-    y' = floor (y/unit)
-
-blockToCoords :: Int -> Int -> Block -> (P.Point, P.Point)
+-- | Transform block to coordinates and size
+blockToCoords 
+  :: Int -- ^ X position of block in chunk
+  -> Int -- ^ Y position of block in chunk
+  -> Block -- ^ Type of block
+  -> (P.Point, P.Point) -- ^ Coordinates and size
 blockToCoords x y _ = (point', (unit, unit))
   where
     point' = unit P.* (fromIntegral x, fromIntegral y)
 
+-- | Chuk with all Air
 emptyChunk :: Chunk Block
 emptyChunk = Chunk (V.replicate chunkHeight (V.replicate chunkWidth Air))
 
+-- | Default chunk with badrock, ground and air
 defaultChunk :: Chunk Block
 defaultChunk =
   Chunk
@@ -115,12 +120,20 @@ defaultChunk =
      V.replicate 9 (V.replicate chunkWidth Ground) V.++
      V.replicate (chunkHeight - 10) (V.replicate chunkWidth Air))
 
-infiniteRandomValues :: (Int -> a) -> StdGen -> [a]
+-- | Generates infinite list of random values
+infiniteRandomValues 
+  :: (Int -> a) -- ^ Function wich will apply to random values
+  -> StdGen -- ^ Initial generator
+  -> [a] -- ^ List of values
 infiniteRandomValues f gen = f v : infiniteRandomValues f gen'
   where
     (v, gen') = next gen
 
-generateRandomGround :: Int -> StdGen -> V.Vector (V.Vector Block)
+-- | Generate absolute random subchunk of ground
+generateRandomGround 
+  :: Int -- ^ maximum height
+  -> StdGen -- ^ Random generator
+  -> V.Vector (V.Vector Block) -- ^ Sub chunk of ground
 generateRandomGround height stdGen = fmap (fmap toEnum) internalBlocks
   where
     internalBlocks :: V.Vector (V.Vector Int)
@@ -130,7 +143,13 @@ generateRandomGround height stdGen = fmap (fmap toEnum) internalBlocks
     rows = map generateRow rowsRandom
     generateRow gen = take chunkWidth (infiniteRandomValues (\x -> x `mod` 2) gen)
 
-generateRandomColumnGround :: Int -> Int -> StdGen -> V.Vector (V.Vector Block)
+-- | Generate random column of ground
+-- Generate value from minHeight to maxHeight, make column of ground with generated height
+generateRandomColumnGround 
+  :: Int -- ^ Min height
+  -> Int -- ^ Max height
+  -> StdGen -- ^ Random generator
+  -> V.Vector (V.Vector Block) -- ^ Subchunk of ground
 generateRandomColumnGround minHeight maxHeight stdGen = internalBlocks
   where
     internalBlocks = mconcat (map (V.singleton . V.fromList) rows)
@@ -139,7 +158,15 @@ generateRandomColumnGround minHeight maxHeight stdGen = internalBlocks
     columns = map generateColumn columnsRandom
     generateColumn v = replicate v Ground ++ replicate (maxHeight - v) Air
 
-generateRecurentGround :: Int -> Int -> Int -> Int -> StdGen -> V.Vector (V.Vector Block)
+-- | Generate random delta.
+-- Height of column of ground equal to height of previous height + delta
+generateRecurentGround 
+  :: Int -- ^ Max height
+  -> Int -- ^ Base value of height
+  -> Int -- ^ Min delta
+  -> Int -- ^ Max delta
+  -> StdGen -- ^ Random generator
+  -> V.Vector (V.Vector Block) -- ^ Subchunk of ground
 generateRecurentGround maxHeight base minDelta maxDelta stdGen = internalBlocks
   where
     internalBlocks = mconcat (map (V.singleton . V.fromList) rows)
@@ -150,6 +177,7 @@ generateRecurentGround maxHeight base minDelta maxDelta stdGen = internalBlocks
     generateColumn v = replicate v Ground ++ replicate (maxHeight - v) Air
     
 
+-- | Generate random chunk with recurent random ground.
 randomChunk :: StdGen -> Chunk Block
 randomChunk stdGen = Chunk (badrock V.++ groundBlocks V.++ air)
   where
@@ -157,6 +185,7 @@ randomChunk stdGen = Chunk (badrock V.++ groundBlocks V.++ air)
     groundBlocks = generateRecurentGround 12 10 (-3) 3 stdGen
     air = V.replicate (chunkHeight - 30) (V.replicate chunkWidth Air)
 
+-- | Constructor of level
 defaultLevel :: Level
 defaultLevel = Level (infChunks leftGen) baseChunk (infChunks rightGen) i
   where

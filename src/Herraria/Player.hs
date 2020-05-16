@@ -1,3 +1,4 @@
+-- | This module responsible for Player data
 module Herraria.Player where
 
 import           Graphics.Gloss
@@ -7,22 +8,26 @@ import           Herraria.Physics
 
 data Player =
   Player
-    { playerCoords       :: Point
-    , playerPic          :: Picture
-    , playerVelocity     :: Velocity
-    , playerAcceleration :: Acceleration
-    , rigidBody          :: RigidBody Player
+    { playerCoords       :: Point -- ^ Coordinats of player.
+    , playerPic          :: Picture -- ^ Picture of the player.
+    , playerVelocity     :: Velocity -- ^ Velocity of the player.
+    , playerAcceleration :: Acceleration -- ^ Acceleration of the player
+    , rigidBody          :: RigidBody Player -- ^ Physical body of the player
     } deriving (Show)
 
-basePlayerSpeed :: Float
+-- | Base player speed
+basePlayerSpeed :: Float 
 basePlayerSpeed = 60
 
+-- | Base Acceleration of the player
 basePlayerAcceleration :: Float
 basePlayerAcceleration = 60
 
+-- | Picture of the player
 playerPicture :: Picture
 playerPicture = color rose (rectangleSolid unit unit)
 
+-- | Constructor of the player
 initPlayer :: Player
 initPlayer =
   Player
@@ -36,5 +41,7 @@ initPlayer =
                                 }
     }
 
+-- | Draw player
+-- Move picture to coordinates
 drawPlayer :: Player -> Picture
 drawPlayer (Player (x, y) picture' _ _ _) = translate x y picture'

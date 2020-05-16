@@ -1,3 +1,4 @@
+-- | Module responsible for interaction with World
 module Herraria.World where
 
 import           Data.Maybe                           (mapMaybe, catMaybes)
@@ -10,37 +11,46 @@ import           Herraria.Level
 import           Herraria.Physics                     (RigidBody(..), normalize, checkCollision, gravity)
 import           Herraria.Player
 
+-- | State of the game
 data GameState =
   GameState
-    { gamePlayer :: Player
-    , gameLevel  :: Level
-    , gameKeys   :: S.Set Key
+    { gamePlayer :: Player -- ^ Player
+    , gameLevel  :: Level -- ^ Current level
+    , gameKeys   :: S.Set Key -- ^ Save pressed keys, needed to move player on hold down the key
     }
 
+-- | Scale gloss coordinates to game coordinates
 scaleInput :: Point -> Point
 scaleInput = (P.*) (1 / unit)
 
+-- | Move coordinates to the center
 shiftInput :: Point -> Point
 shiftInput = (P.+) (unit / 2, unit / 2)
 
+-- | Mouse coordinates to game coordinates
 mouseToPlayer :: Point -> Point
 mouseToPlayer = scaleInput . shiftInput
 
+-- | Floor point
 pointToInt :: (Float, Float) -> (Int, Int)
 pointToInt (pntX, pntY) = (floor pntX, floor pntY)
 
+-- | Input coordinates to block in chunk coordinates
 inputToChunkInt :: Float -> Point -> Point -> (Int, Int)
 inputToChunkInt ofset playerPos mousePos =
   pointToInt (scaleInput (playerPos P.- (ofset, 0)) P.+ mouseToPlayer mousePos)
 
+-- | Update pressed keys
 updatePressed :: KeyState -> Key -> S.Set Key -> S.Set Key
 updatePressed Down = S.insert
 updatePressed Up   = S.delete
 
+-- | From mouse button to block
 blockToPut :: MouseButton -> Block
 blockToPut LeftButton = Ground
 blockToPut _          = Air
 
+-- | Update world
 handleWorld :: Event -> GameState -> GameState
 handleWorld (EventKey (MouseButton btn) Down _ pos) world@(GameState player level _) =
   world
@@ -59,6 +69,7 @@ handleWorld (EventKey key state _ _) world@(GameState _ _ keys) =
   world {gameKeys = updatePressed state key keys}
 handleWorld _ world = world
 
+-- | Map key to Direction
 keyToDirection :: Key -> Maybe Direction
 keyToDirection (Char 'w')            = Just UP
 keyToDirection (Char 'a')            = Just LEFT
@@ -70,16 +81,18 @@ keyToDirection (SpecialKey KeyDown)  = Just DOWN
 keyToDirection (SpecialKey KeyRight) = Just RIGHT
 keyToDirection _                     = Nothing
 
+-- | Map direction to vector
 directionToVec :: Direction -> Point
 directionToVec UP    = (0, 1)
 directionToVec LEFT  = (-1, 0)
 directionToVec DOWN  = (0, -1)
 directionToVec RIGHT = (1, 0)
 
+-- | Check Colision of player with level
 checkCollisionWithLevel 
-    :: RigidBody Player
-    -> Level
-    -> Bool
+    :: RigidBody Player -- ^ Physical body of player.
+    -> Level -- ^ Level.
+    -> Bool -- ^ True if there are collision, False if there are not.
 checkCollisionWithLevel pl (Level _ chunk _ i) = any (checkCollision pl) rigidBodiesList
   where
     rigidBodies = imapChunk (blockToRigidBody (fromIntegral (i * chunkWidth))) chunk
@@ -103,14 +116,17 @@ notInChunk ofset (x, _) chunk = result
       | otherwise                  = Nothing
     
 
+-- | Update Physics of the game.
+-- Move player and level if needed
+-- Check collisions of player with level
 updatePhysics :: Float -> GameState -> GameState
 updatePhysics dt world@(GameState p@(Player coords _ vel acc rb) gl pressed) =
   world {gamePlayer = p', gameLevel=level'}
   where
     p' =
       p
-        { playerCoords = playerCoords'-- if checkCollisionWithLevel rb' gl then coords else playerCoords'
-        , playerVelocity =  playerSpeed' --vel P.+ dt P.* acc
+        { playerCoords = playerCoords'
+        , playerVelocity =  playerSpeed'
         , playerAcceleration = playerAcceleration'
         , rigidBody = rb'
         } 
@@ -143,6 +159,6 @@ updatePhysics dt world@(GameState p@(Player coords _ vel acc rb) gl pressed) =
               Just RIGHT -> moveToRight gl
               _          -> gl
 
-
+-- | Default world
 initWorld :: GameState
 initWorld = GameState initPlayer defaultLevel S.empty
